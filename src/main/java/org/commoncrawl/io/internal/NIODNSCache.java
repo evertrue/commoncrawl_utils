@@ -17,26 +17,19 @@
 package org.commoncrawl.io.internal;
 
 
-import static org.junit.Assert.*;
-
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.net.UnknownHostException;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.Stack;
 import java.util.TreeSet;
@@ -47,7 +40,6 @@ import org.commoncrawl.util.shared.CCStringUtils;
 import org.commoncrawl.util.shared.DomainNameUtils;
 import org.commoncrawl.util.shared.IPAddressUtils;
 import org.commoncrawl.util.shared.MovingAverage;
-import org.junit.Test;
 
 public class NIODNSCache {
 
@@ -874,16 +866,6 @@ public class NIODNSCache {
 		return null;
 	}
 
-	@Test
-	public void simpleTest() throws Exception {
-		int ipAddress = IPAddressUtils.IPV4AddressStrToInteger("68.178.211.35");
-		cacheIPAddressForHost("www.matlockpark.com", ipAddress, 1226959057707L, "matlockpark.com");
-		DNSResult result = getIPAddressForHost("www.matlockpark.com");
-		org.junit.Assert.assertTrue(result.getCannonicalName().equals("matlockpark.com"));
-		org.junit.Assert.assertTrue(result.getIPAddress() == ipAddress);
-		org.junit.Assert.assertTrue(result.getTTL() == 1226959057707L);
-	}
-
 	public static interface LoadFilter {
 		String validateName(String hostName);
 
@@ -1024,115 +1006,6 @@ public class NIODNSCache {
 		}
 	}
 
-	@Test
-	public void validateDumpCode() throws Exception {
-		addNameNode("www.feeds.feedburner.com");
-		addNameNode("pictures.google.com");
-		addNameNode("pictures2.google.com");
-		addNameNode("gmail.google.com");
-		addNameNode("foobar.google.com");
-
-		assertTrue(findNode("feeds.feedburner.com") == null);
-		assertTrue(findNode("www.feeds.feedburner.com") != null);
-		assertTrue(findNode("pictures.google.com") != null);
-		assertTrue(findNode("pictures2.google.com") != null);
-		assertTrue(findNode("gmail.google.com") != null);
-		assertTrue(findNode("foobar.google.com") != null);
-
-		dumpNameTree(System.out, null);
-	}
-
-	@Test
-	public void validateTrieCode() throws Exception {
-
-		//    addNode("www.google.com",System.currentTimeMillis() + 60000).setMetadata("www.google.com");
-		//    addNode("pictures.google.com",System.currentTimeMillis() + 60000).setMetadata("pictures.google.com");
-		//    addNode("pictures2.google.com",System.currentTimeMillis() + 60000).setMetadata("pictures2.google.com");
-		//    addNode("gmail.google.com",System.currentTimeMillis() + 60000).setMetadata("gmail.google.com");
-		//    addNode("foobar.google.com",System.currentTimeMillis() + 60000).setMetadata("foobar.google.com");
-		//    Node googleSuperNode = addNode("google.com",System.currentTimeMillis() + 60000);
-		//    googleSuperNode.markAsSuperHost();
-		//    googleSuperNode.setMetadata("google.com");
-
-		//   Node wwwGoogleCom = findNode("www.google.com");
-		//   Node productsGoogleCom = findNode("products.google.com");
-
-		//   org.junit.Assert.assertTrue(wwwGoogleCom.getMetadata().equals("www.google.com"));
-		//   org.junit.Assert.assertTrue(productsGoogleCom.getMetadata().equals("google.com"));
-
-		URL resourceURL = ClassLoader.getSystemResource("urls.txt");
-
-		if (resourceURL == null) {
-			throw new FileNotFoundException();
-		}
-
-		Set<String> hostSet = new HashSet<String>();
-
-		for (int pass = 0; pass < 1; ++pass) {
-
-			System.out.println("running pass:" + pass);
-
-			InputStream stream = resourceURL.openStream();
-
-			BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-
-			String line;
-			int lineCount = 0;
-
-			while ((line = reader.readLine()) != null) {
-				try {
-					URL url = new URL(line);
-					if (url.getHost() != null && url.getHost().length() != 0) {
-						if (pass == 0) {
-							//hostSet.add(url.getHost().toLowerCase());
-							cacheIPAddressForHost(url.getHost(), url.getHost().hashCode(), System.currentTimeMillis()
-									+ 5000 + (int) (Math.random() * 30000.00),
-									Integer.toString(url.getHost().hashCode()));
-						} else {
-
-							Node node = findNode(url.getHost());
-							if (node != null) {
-
-								if (node.getIPAddress() != url.getHost().hashCode()) {
-									throw new RuntimeException("Metadata Mismatch for host:" + url.getHost()
-											+ ".Excpected:" + url.getHost().hashCode() + " Got: " + node.getIPAddress());
-								}
-							} else {
-								throw new RuntimeException("Node Null! Excpected:" + url.getHost());
-							}
-						}
-					}
-					if (++lineCount % 10000 == 0) {
-						System.out.println("pruning mid-stream");
-						pruneCache();
-						System.out.println("sleeping a little while ..");
-						Thread.sleep(100);
-						System.out.println("wokeup");
-						//System.out.print(".");
-					}
-				} catch (MalformedURLException e) {
-
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-			System.out.println("done reading entries");
-		}
-		System.out.println("Host Count:" + hostSet.size());
-		System.out.println("Number of Nodes:" + numberOfNodes);
-		System.out.println("Number of Nodes EQ_1:" + numberOfNodesChildEQ1);
-		System.out.println("Number of Nodes LTEQ_4:" + numberOfNodesChildLTEQ4);
-		System.out.println("Number of Nodes LTEQ_8:" + numberOfNodesChildLTEQ8);
-		System.out.println("Number of Nodes GT_8:" + numberOfNodesChildGT8);
-
-		while (true) {
-			System.out.println("sleeping...");
-			Thread.sleep(100);
-			System.out.println("pruning.. ");
-			pruneCache();
-		}
-
-	}
 
 	public static void main(String[] args) {
 

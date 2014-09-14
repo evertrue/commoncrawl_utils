@@ -24,7 +24,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.hadoop.conf.Configuration;
-import org.junit.Test;
 
 /**
  * Remove some common session id patterns from incoming urls
@@ -360,40 +359,5 @@ public class SessionIDURLNormalizer {
 			"http://www.couponchief.com/coupons/submit?sid=4422",
 			"http://www.emeraldinsight.com/Insight/menuNavigation.do;jsessionid=A17FC93E864C2F8B3709F63558BA69DB?hdAction=InsightHome",
 			"http://www.lakeshorelearning.com/order/onlineOrder.jsp;jsessionid=KxMMpRGgPpC1ktZ1pJJCZF1MmmFxZHPnyrNJhBmWJGHkhcL5Hd4p!-617247554!NONE?FOLDER%3C%3Efolder_id=2534374302096766&ASSORTMENT%3C%3East_id=1408474395181113&bmUID=1257311436941" };
-
-	@Test
-	public void unitTest() throws Exception {
-
-		long totalTimeStart = System.currentTimeMillis();
-		for (String url : testStrings) {
-
-			long nanoSecsStart = System.nanoTime();
-			String result = normalize(url, "");
-			long nanoSecsEnd = System.nanoTime();
-			long nanoTime;
-
-			if (nanoSecsEnd < nanoSecsStart) {
-				nanoTime = (Long.MAX_VALUE - nanoSecsStart) + nanoSecsEnd;
-			} else {
-				nanoTime = nanoSecsEnd - nanoSecsStart;
-			}
-			if (result != url) {
-				System.out.print("*");
-			}
-			System.out.println("Time:" + nanoTime + "Source:" + url + " Resolved to:" + result);
-		}
-
-		long totalTimeEnd = System.currentTimeMillis();
-		System.out.println("Total Time:" + (totalTimeEnd - totalTimeStart));
-
-	}
-
-	public static void main(String[] args) {
-		try {
-			new SessionIDURLNormalizer().unitTest();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 
 }

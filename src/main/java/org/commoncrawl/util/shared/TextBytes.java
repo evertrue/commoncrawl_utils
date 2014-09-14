@@ -24,7 +24,6 @@ import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.io.WritableComparable;
 import org.apache.hadoop.io.WritableComparator;
 import org.apache.hadoop.io.WritableUtils;
-import org.junit.Assert;
 
 /**
  * basically a clone of hadoop Text class with FlexBuffer as the backing store
@@ -715,53 +714,6 @@ public final class TextBytes extends BinaryComparableWithOffset implements Writa
 			ch = iter.next();
 		}
 		return size;
-	}
-
-	public static void main(String[] args) {
-		// run some tests on the new code
-		String aTestString = new String("A Test Strnig");
-		// convert it to bytes
-		byte bytes[] = aTestString.getBytes();
-		// over allocate an array
-		byte overAllocated[] = new byte[bytes.length * 2];
-		// copy source
-		System.arraycopy(bytes, 0, overAllocated, bytes.length, bytes.length);
-		// now allocate a TextBytes
-		TextBytes textBytes = new TextBytes();
-		// set the overallocated buffer as the backing store
-		textBytes.set(overAllocated, bytes.length, bytes.length, false);
-		// convert it to string first
-		String toString = textBytes.toString();
-		// validate equal to original
-		Assert.assertTrue(aTestString.equals(toString));
-		// ok now write it to output buffer
-		DataOutputBuffer outputBuffer = new DataOutputBuffer();
-		// write string
-		try {
-			textBytes.write(outputBuffer);
-			// read length
-			DataInputBuffer inputBuffer = new DataInputBuffer();
-			inputBuffer.reset(outputBuffer.getData(), 0, outputBuffer.size());
-			int encodedLength = WritableUtils.readVInt(inputBuffer);
-			// validate arrays match ...
-			Assert.assertTrue(encodedLength == bytes.length);
-			Assert.assertEquals(
-					WritableComparator.compareBytes(bytes, 0, bytes.length, outputBuffer.getData(),
-							inputBuffer.getPosition(), outputBuffer.getLength() - inputBuffer.getPosition()), 0);
-			// ok reset input buffer again ...
-			inputBuffer.reset(outputBuffer.getData(), 0, outputBuffer.size());
-			// read in fields
-			textBytes.readFields(inputBuffer);
-			// ok see if we are not using the original backing store ...
-			Assert.assertTrue(textBytes.getBytes() != overAllocated);
-			// validate buffers match to original
-			Assert.assertEquals(WritableComparator.compareBytes(bytes, 0, bytes.length, textBytes.getBytes(),
-					textBytes.getOffset(), textBytes.getLength()), 0);
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
 	}
 
 	@Override

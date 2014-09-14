@@ -19,8 +19,6 @@ package org.commoncrawl.util.shared;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.junit.Test;
-
 /**
  * IPV4 Address Helpers
  * 

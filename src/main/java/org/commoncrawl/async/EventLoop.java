@@ -27,7 +27,6 @@ import org.commoncrawl.async.Callbacks.Callback;
 import org.commoncrawl.async.Callbacks.CallbackWithResult;
 import org.commoncrawl.io.internal.NIODNSLocalResolver;
 import org.commoncrawl.io.internal.NIOSocketSelector;
-import org.junit.Test;
 
 public class EventLoop implements Runnable {
 
@@ -266,42 +265,6 @@ public class EventLoop implements Runnable {
 			}
 
 		}));
-	}
-
-	@Test
-	public void testEventLoop() throws Exception {
-
-		final EventLoop eventLoop = new EventLoop();
-
-		eventLoop.start();
-		eventLoop.setTimer(new Timer(1000, false, new Timer.Callback() {
-
-			public void timerFired(Timer timer) {
-				System.out.println("Timer 1 Fired");
-			}
-
-		}));
-
-		eventLoop.setTimer(new Timer(500, false, new Timer.Callback() {
-
-			public void timerFired(Timer timer) {
-				System.out.println("Timer 2 Fired");
-			}
-
-		}));
-
-		eventLoop.setTimer(new Timer(3000, false, new Timer.Callback() {
-
-			public void timerFired(Timer timer) {
-				System.out.println("Timer 3 Fired");
-				eventLoop.stop();
-			}
-
-		}));
-
-		System.out.println("Wait for Timer to Fire");
-		eventLoop.getEventThread().join();
-		System.out.println("Event loop stopped. Shutting down.");
 	}
 
 }

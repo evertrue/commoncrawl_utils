@@ -1,10 +1,7 @@
 package org.commoncrawl.rpc;
 
 
-import static org.junit.Assert.*;
-
 import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.EOFException;
@@ -12,16 +9,12 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UTFDataFormatException;
-import java.nio.ByteBuffer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.commoncrawl.io.internal.NIOBufferList;
 import org.commoncrawl.io.internal.NIOBufferListInputStream;
 import org.commoncrawl.io.internal.NIOBufferListOutputStream;
 import org.commoncrawl.util.shared.CCStringUtils;
-import org.commoncrawl.util.shared.TextBytes;
-import org.junit.Test;
 
 /**
  * The Framing Protocol used to represent a wire level CC Message
@@ -686,89 +679,6 @@ public class RPCFrame {
 			}
 
 		}
-
-	}
-
-	@Test
-	public void testEncoderDecoder() throws Exception {
-
-		NIOBufferList output = new NIOBufferList();
-		NIOBufferList input = new NIOBufferList();
-
-		NIOBufferListOutputStream outputStream = new NIOBufferListOutputStream(output);
-		NIOBufferListInputStream inputStream = new NIOBufferListInputStream(input);
-
-		RPCFrame.Encoder encoder = new RPCFrame.Encoder(outputStream);
-		RPCFrame.Decoder decoder = new RPCFrame.Decoder(inputStream);
-
-		/**
-		 * UnitTestStruct1 based on rpc defiinition: module org.commoncrawl.rpc {
-		 * 
-		 * class UnitTestStruct1 {
-		 * 
-		 * enum EnumeratedValue { ONE = 1; TWO = 2; }
-		 * 
-		 * int intType = 1; long longType = 2; ustring stringType = 3;
-		 * vector<ustring> vectorOfStrings = 4; }
-		 * 
-		 * }
-		 * */
-		UnitTestStruct1 inputStruct = new UnitTestStruct1();
-		UnitTestStruct1 outputStruct = new UnitTestStruct1();
-
-		inputStruct.setIntType(10);
-		inputStruct.setLongType(20);
-		inputStruct.setStringType("one");
-		inputStruct.setFieldDirty(UnitTestStruct1.Field_VECTOROFSTRINGS);
-		inputStruct.getVectorOfStrings().add(new TextBytes("one"));
-		inputStruct.getVectorOfStrings().add(new TextBytes("two"));
-		inputStruct.getVectorOfStrings().add(new TextBytes("three"));
-
-		OutgoingMessageContext<UnitTestStruct1, UnitTestStruct1> request = new OutgoingMessageContext<UnitTestStruct1, UnitTestStruct1>(
-				"testService", "testMethod", inputStruct, outputStruct, null);
-
-		request.setRequestId(10);
-
-		encoder.encodeRequest(request);
-
-		// stream the data in one byte at a time
-		while (output.available() != 0) {
-
-			ByteBuffer buffer = output.read();
-
-			input.getWriteBuf().put(buffer.get());
-			input.flush();
-			if (buffer.remaining() != 0) {
-				output.putBack(buffer);
-			}
-			// validate that the decoder doesn't return the frame until the
-			// appropriate time
-			if (output.available() != 0)
-				assertTrue(decoder.getNextRequestFrame() == null);
-		}
-
-		RPCFrame.IncomingFrame incomingFrame = decoder.getNextRequestFrame();
-		// at this point the frame should be available ...
-		assertTrue(incomingFrame != null);
-
-		// check frame header values ...
-		assertTrue(incomingFrame._service.equals("testService"));
-		assertTrue(incomingFrame._method.equals("testMethod"));
-		assertTrue(incomingFrame._requestId == 10);
-		assertTrue(incomingFrame._type == RPCFrame.MSG_TYPE.REQUEST.ordinal());
-
-		// deserialize the input struct
-		outputStruct.deserialize(new DataInputStream(incomingFrame._payload), new BinaryProtocol());
-
-		// validate values of deserialized struct against original (input) struct
-
-		assertTrue(outputStruct.getIntType() == inputStruct.getIntType());
-		assertTrue(outputStruct.getLongType() == inputStruct.getLongType());
-		assertTrue(outputStruct.getStringType().equals(inputStruct.getStringType()));
-		assertTrue(outputStruct.getVectorOfStrings().size() == inputStruct.getVectorOfStrings().size());
-		assertTrue(outputStruct.getVectorOfStrings().get(0).equals(inputStruct.getVectorOfStrings().get(0)));
-		assertTrue(outputStruct.getVectorOfStrings().get(1).equals(inputStruct.getVectorOfStrings().get(1)));
-		assertTrue(outputStruct.getVectorOfStrings().get(2).equals(inputStruct.getVectorOfStrings().get(2)));
 
 	}
 }

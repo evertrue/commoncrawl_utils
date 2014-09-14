@@ -39,8 +39,6 @@ import org.commoncrawl.io.shared.NIOHttpHeaders;
 import org.commoncrawl.util.shared.BandwidthUtils;
 import org.commoncrawl.util.shared.CustomLogger;
 import org.commoncrawl.util.shared.IPAddressUtils;
-import org.junit.Assert;
-import org.junit.Test;
 
 /**
  * 
@@ -1595,34 +1593,6 @@ public final class NIOHttpConnection implements NIOClientSocketListener, NIODNSQ
 		}
 	}
 
-	public static class NIOHttpConnectionUnitTest {
-
-		@Test
-		public void runTest() throws Exception {
-			testHTTPConnection();
-		}
-	};
-
-	static void testHTTPConnection() {
-		// basic http 
-		Assert.assertTrue(MockHTTPConnection(new String[] { "HTTP/1.0 200 OK\r\n\r\n", "hello world" }, false,
-				"HTTP/1.0 200 OK", 200, "hello world"));
-		// basic http no header ... 
-		/*
-		Assert.assertTrue(MockHTTPConnection(
-		    new String[] { "hello world" },false,"HTTP/0.9 200 OK",200,"hello world"));
-		*/
-		// 404 with alternate line terminators ... 
-
-		Assert.assertTrue(MockHTTPConnection(new String[] { "HTTP/1.0 404 Not Found\nServer: blah\n\nDATA" }, false,
-				"HTTP/1.0 404 Not Found", 404, "DATA"));
-
-		// streaming headers ... 
-
-		Assert.assertTrue(MockHTTPConnection(new String[] { "HTTP/1.0 ", "200 OK", "\n", "Server: blah\r", "\n", "\n",
-				"DA", "TA" }, false, "HTTP/1.0 200 OK", 200, "DATA"));
-
-	}
 
 	static boolean MockHTTPConnection(String[] dataSet, boolean failureExcepted, String statusLineExpected,
 			int statusCodeExpected, String dataExpected) {

@@ -25,7 +25,6 @@ import java.nio.ByteBuffer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.fs.FSDataInputStream;
-import org.junit.Assert;
 
 /**
  * Encode a set of Longs using Rice coding, a variant of Golomb coding,
@@ -295,54 +294,6 @@ public class RiceCoder {
 
 	private static double lg(double value) {
 		return Math.log(value) / Math.log(2.0);
-	}
-
-	public static void main(String[] args) {
-		long foo = Long.MIN_VALUE;
-		RiceCoder test = new RiceCoder(54, true);
-		test.addItem(0);
-		test.addItem(1);
-		test.addItem(-1);
-		test.addItem(Long.MAX_VALUE);
-		test.addItem(Long.MAX_VALUE - 1);
-		test.addItem(Long.MIN_VALUE + 1);
-		test.addItem(Long.MIN_VALUE);
-
-		RiceCodeReader testReader = new RiceCodeReader(54, test.nbits, ByteBuffer.wrap(test.bits), true);
-
-		try {
-			Assert.assertTrue(testReader.nextValue() == 0);
-			Assert.assertTrue(testReader.nextValue() == 1);
-			Assert.assertTrue(testReader.nextValue() == -1);
-			Assert.assertTrue(testReader.nextValue() == Long.MAX_VALUE);
-			Assert.assertTrue(testReader.nextValue() == Long.MAX_VALUE - 1);
-			Assert.assertTrue(testReader.nextValue() == Long.MIN_VALUE + 1);
-			Assert.assertTrue(testReader.nextValue() == Long.MIN_VALUE);
-
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
-
-		try {
-			RiceCodeReader newReader = new RiceCodeReader(54, test.nbits, new FSDataInputStream(
-					new ByteBufferInputStream(ByteBuffer.wrap(test.bits))), 0, true);
-
-			try {
-				Assert.assertTrue(newReader.nextValue() == 0);
-				Assert.assertTrue(newReader.nextValue() == 1);
-				Assert.assertTrue(newReader.nextValue() == -1);
-				Assert.assertTrue(newReader.nextValue() == Long.MAX_VALUE);
-				Assert.assertTrue(newReader.nextValue() == Long.MAX_VALUE - 1);
-				Assert.assertTrue(newReader.nextValue() == Long.MIN_VALUE + 1);
-				Assert.assertTrue(newReader.nextValue() == Long.MIN_VALUE);
-
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-
-		} catch (IOException e) {
-			LOG.error(CCStringUtils.stringifyException(e));
-		}
 	}
 
 }

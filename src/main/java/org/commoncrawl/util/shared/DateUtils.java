@@ -10,7 +10,6 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.junit.Assert;
 
 
 /**
@@ -210,12 +209,5 @@ public class DateUtils {
 		// NOTREACHED() << "Cookie exploded expiration failed: " << time_string;
 
 		return -1;
-	}
-
-	public static void main(String[] args) {
-		Assert.assertFalse(parseHttpDate("Sun, 22 Nov 2009 01:37:06GMT") == -1);
-		Assert.assertFalse(parseHttpDate("Sun, 22 Nov 2009 01:37:06 GMT") == -1);
-		Assert.assertFalse(parseHttpDate("Thu, 26 May 2011 03:40:51 GMT") == -1);
-
 	}
 }
