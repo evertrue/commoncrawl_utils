@@ -16,7 +16,8 @@
 
 package org.commoncrawl.io.internal;
 
-import static org.junit.Assert.assertTrue;
+
+import static org.junit.Assert.*;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;

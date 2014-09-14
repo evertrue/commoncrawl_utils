@@ -22,11 +22,10 @@ package org.commoncrawl.util.shared;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import junit.framework.Assert;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.fs.FSDataInputStream;
+import org.junit.Assert;
 
 /**
  * Encode a set of Longs using Rice coding, a variant of Golomb coding,

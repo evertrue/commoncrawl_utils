@@ -10,7 +10,8 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import junit.framework.Assert;
+import org.junit.Assert;
+
 
 /**
  * Pseudo flexible HTTP date parser

@@ -1,6 +1,7 @@
 package org.commoncrawl.rpc;
 
-import static org.junit.Assert.assertTrue;
+
+import static org.junit.Assert.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -18,7 +19,6 @@ import org.apache.commons.logging.LogFactory;
 import org.commoncrawl.io.internal.NIOBufferList;
 import org.commoncrawl.io.internal.NIOBufferListInputStream;
 import org.commoncrawl.io.internal.NIOBufferListOutputStream;
-import org.commoncrawl.rpc.UnitTestStruct1;
 import org.commoncrawl.util.shared.CCStringUtils;
 import org.commoncrawl.util.shared.TextBytes;
 import org.junit.Test;

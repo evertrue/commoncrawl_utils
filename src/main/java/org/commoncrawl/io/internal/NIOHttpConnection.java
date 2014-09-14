@@ -31,8 +31,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.concurrent.FutureTask;
 
-import junit.framework.Assert;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.util.StringUtils;
@@ -41,6 +39,7 @@ import org.commoncrawl.io.shared.NIOHttpHeaders;
 import org.commoncrawl.util.shared.BandwidthUtils;
 import org.commoncrawl.util.shared.CustomLogger;
 import org.commoncrawl.util.shared.IPAddressUtils;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**

@@ -11,8 +11,6 @@ import org.commoncrawl.async.Timer;
 import org.commoncrawl.rpc.InProcessActor.InProcessChannel;
 import org.commoncrawl.rpc.MessageData.Status;
 import org.commoncrawl.rpc.OutgoingMessageContext.Callback;
-import org.commoncrawl.rpc.RPCTestService;
-import org.commoncrawl.rpc.UnitTestStruct1;
 import org.junit.Test;
 
 public class RPCTestServer extends RPCActorService implements RPCTestService {
